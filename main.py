@@ -19,10 +19,15 @@ def main():
     # Create Google genai client.
     client = genai.Client(api_key=api_key)
 
+    # Enable chat conversation history between user and Gemini.
+    messages = [
+        genai.types.Content(role="user", parts=[genai.types.Part(text=user_content)])
+    ]
+
     # Generate a response from Goolge genai.
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
-        contents=user_content,
+        contents=messages,
     )
 
     print(response.text)
