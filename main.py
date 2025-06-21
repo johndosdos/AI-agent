@@ -10,11 +10,18 @@ def main():
     api_key = os.environ.get("GEMINI_API_KEY")
 
     # Extract user argument from input. Must have at least 1 argument present.
-    if len(sys.argv) < 2:
+    len_user_input = len(sys.argv)
+
+    if len_user_input < 2:
         print("Error: Must have at least 1 argument present.")
         sys.exit(1)
 
-    _, user_content = sys.argv
+    # Have an optional "--verbose" flag.
+    verbose = False
+    if "--verbose" in sys.argv:
+        verbose = True
+
+    user_content = sys.argv[1]
 
     # Create Google genai client.
     client = genai.Client(api_key=api_key)
@@ -30,10 +37,13 @@ def main():
         contents=messages,
     )
 
-    print(response.text)
-
-    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    if verbose:
+        print(response.text)
+        print(f"User prompt: {user_content}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    else:
+        print(response.text)
 
 
 main()
