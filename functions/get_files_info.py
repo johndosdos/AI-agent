@@ -16,8 +16,12 @@ def get_files_info(working_directory, directory=None):
     else:
         requested_path = root_path
 
+    item_list = ""
+
     for item in os.listdir(requested_path):
         file_size = os.path.getsize(os.path.join(requested_path, item))
         is_dir = os.path.isdir(os.path.join(requested_path, item))
 
-        print(f"{item}: file_size={file_size}, is_dir={is_dir}")
+        item_list += f"{item}: file_size={file_size}, is_dir={is_dir}"
+
+    return item_list
