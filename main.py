@@ -38,6 +38,10 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Execute Python files with optional arguments
 - Write or overwrite files
 
+Keep it concise. Use simple words.
+
+Solve this problem in the most practical way, not the most efficient or clever. Prioritize simplicity, clarity, and ease of maintenance. Write code as if another developer will need to read and update it in six months. Avoid over-engineering or unnecessary optimization—just make it work well and be easy to understand. Add brief comments if needed to explain your approach.
+
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
 
@@ -131,19 +135,34 @@ All paths you provide should be relative to the working directory. You do not ne
         config=config,
     )
 
-    calls = response.function_calls
-    if calls:
-        for call in calls:
-            call_response = call_function(call)
-            content_response = call_response.parts[0].function_response.response
+    # Process response. Make a loop to simulate a conversation.
+    for i in range(0, 19):
+        # Generate a response from Goolge genai.
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-001",
+            contents=messages,
+            config=config,
+        )
 
-            if verbose == True:
-                print(f"-> {content_response}")
-    else:
-        print(response.text)
+        for candidate in response.candidates:
+            messages.append(candidate.content)
+
+        calls = response.function_calls
+        if calls:
+            for call in calls:
+                call_response = call_function(call)
+                content_response = call_response.parts[0].function_response.response
+
+                messages.append(call_response)
+
+                if verbose == True:
+                    print(f"-> {content_response}")
+        else:
+            print(f"\n{response.text}")
+            break
 
     if verbose:
-        print(response.text)
+        print(f"\n-> {response.text}")
         print(f"-> User prompt: {user_content}")
         print(f"-> Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"-> Response tokens: {response.usage_metadata.candidates_token_count}")
