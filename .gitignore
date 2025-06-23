@@ -1,2 +1,4 @@
 venv
 .env
+functions/__pycache__
+calculator/pkg/__pycache__
