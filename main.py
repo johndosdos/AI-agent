@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from google import genai
+from functions.call_functions import call_function
 
 
 def main():
@@ -133,15 +134,20 @@ All paths you provide should be relative to the working directory. You do not ne
     calls = response.function_calls
     if calls:
         for call in calls:
-            print(f"Calling function: {call.name}({call.args})")
+            call_response = call_function(call)
+            content_response = call_response.parts[0].function_response.response
+
+            if verbose == True:
+                print(f"-> {content_response}")
     else:
         print(response.text)
 
     if verbose:
         print(response.text)
-        print(f"User prompt: {user_content}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        print(f"-> User prompt: {user_content}")
+        print(f"-> Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"-> Response tokens: {response.usage_metadata.candidates_token_count}")
 
 
-main()
+if __name__ == "__main__":
+    main()
